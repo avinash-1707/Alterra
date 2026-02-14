@@ -1,4 +1,4 @@
-import GradientBlob from "../landing/GradientBlog";
+import GradientBlob from "../common/GradientBlog";
 
 export default function PricingHero() {
   return (

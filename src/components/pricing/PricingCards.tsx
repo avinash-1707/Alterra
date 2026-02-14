@@ -1,4 +1,4 @@
-import GlassCard from "../landing/GlassCard";
+import GlassCard from "../common/GlassCard";
 import LandingButton from "../landing/LandingButton";
 
 export default function PricingCards() {

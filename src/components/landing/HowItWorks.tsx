@@ -1,4 +1,4 @@
-import GlassCard from "./GlassCard";
+import GlassCard from "../common/GlassCard";
 
 export default function HowItWorks() {
   const steps = [

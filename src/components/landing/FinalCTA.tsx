@@ -1,4 +1,4 @@
-import GradientBlob from "./GradientBlog";
+import GradientBlob from "../common/GradientBlog";
 import LandingButton from "./LandingButton";
 
 export default function FinalCTA() {

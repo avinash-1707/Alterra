@@ -1,4 +1,4 @@
-import GlassCard from "../landing/GlassCard";
+import GlassCard from "../common/GlassCard";
 
 export default function PricingComparison() {
   const features = [

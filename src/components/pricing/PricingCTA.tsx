@@ -1,5 +1,5 @@
-import GlassCard from "../landing/GlassCard";
-import GradientBlob from "../landing/GradientBlog";
+import GlassCard from "../common/GlassCard";
+import GradientBlob from "../common/GradientBlog";
 import LandingButton from "../landing/LandingButton";
 
 export default function PricingCTA() {

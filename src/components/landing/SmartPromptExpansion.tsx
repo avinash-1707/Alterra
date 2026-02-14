@@ -1,5 +1,5 @@
-import GlassCard from "./GlassCard";
-import GradientBlob from "./GradientBlog";
+import GlassCard from "../common/GlassCard";
+import GradientBlob from "../common/GradientBlog";
 
 export default function SmartPromptExpansion() {
   return (

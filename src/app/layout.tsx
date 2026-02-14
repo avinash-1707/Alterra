@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Instrument_Serif, Manrope } from "next/font/google";
 import "./globals.css";
+import { View } from "drizzle-orm";
+import { ViewTransitions } from "next-view-transitions";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -42,11 +44,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${manrope.variable} ${instrumentSerif.variable} ${bebasNeue.variable}`}
-    >
-      <body className={`${manrope.className} antialiased`}>{children}</body>
-    </html>
+    <ViewTransitions>
+      <html
+        lang="en"
+        className={`${manrope.variable} ${instrumentSerif.variable} ${bebasNeue.variable}`}
+      >
+        <body className={`${manrope.className} antialiased`}>{children}</body>
+      </html>
+    </ViewTransitions>
   );
 }

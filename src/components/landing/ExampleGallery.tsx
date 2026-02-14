@@ -1,9 +1,9 @@
 const getAspectClass = (size: string) => {
   switch (size) {
     case "large":
-      return "aspect-[4/5]";
+      return "aspect-4/5";
     case "medium":
-      return "aspect-[3/4]";
+      return "aspect-3/4";
     default:
       return "aspect-square";
   }

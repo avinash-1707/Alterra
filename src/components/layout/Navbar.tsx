@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import LandingButton from "../landing/LandingButton";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function Navbar() {
     { name: "Features", href: "#features" },
     { name: "How It Works", href: "#how-it-works" },
     { name: "Gallery", href: "#gallery" },
-    { name: "Pricing", href: "#pricing" },
+    { name: "Pricing", href: "/pricing" },
   ];
 
   return (
@@ -32,13 +32,13 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -91,22 +91,22 @@ export default function Navbar() {
             <div className="md:hidden mt-4 pt-4 border-t border-zinc-800/50">
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.name}
                     href={link.href}
                     className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                     onClick={() => setIsOpen(false)}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 ))}
                 <div className="flex flex-col gap-3 pt-4 border-t border-zinc-800/50">
-                  <a
+                  <Link
                     href="#login"
                     className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                   >
                     Sign In
-                  </a>
+                  </Link>
                   <LandingButton variant="primary" size="md">
                     Get Started
                   </LandingButton>

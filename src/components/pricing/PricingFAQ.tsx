@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import GlassCard from "../landing/GlassCard";
+import GlassCard from "../common/GlassCard";
 
 export default function PricingFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
