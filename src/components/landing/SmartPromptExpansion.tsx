@@ -1,3 +1,4 @@
+import Image from "next/image";
 import GlassCard from "../common/GlassCard";
 import GradientBlob from "../common/GradientBlog";
 
@@ -38,8 +39,13 @@ export default function SmartPromptExpansion() {
               <p className="text-2xl md:text-3xl font-light text-zinc-300 mb-8">
                 "a cat in a garden"
               </p>
-              <div className="h-64 bg-zinc-900/50 rounded-2xl flex items-center justify-center">
-                <span className="text-zinc-600 text-sm">Simple prompt</span>
+              <div className="relative h-64 bg-zinc-900/50 rounded-2xl overflow-hidden">
+                <Image
+                  src="/images/no_enhancement.png"
+                  alt="Simple prompt result"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </GlassCard>
@@ -55,10 +61,13 @@ export default function SmartPromptExpansion() {
                 garden, golden hour sunlight filtering through rose bushes, soft
                 bokeh background, cinematic composition, shallow depth of field"
               </p>
-              <div className="h-64 bg-linear-to-br from-orange-500/10 to-purple-500/10 rounded-2xl flex items-center justify-center border border-orange-500/20">
-                <span className="text-orange-300/60 text-sm">
-                  Cinematic result
-                </span>
+              <div className="relative h-64 bg-linear-to-br from-orange-500/10 to-purple-500/10 rounded-2xl overflow-hidden border border-orange-500/20">
+                <Image
+                  src="/images/with_enhancement.png"
+                  alt="Cinematic enhanced result"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </GlassCard>
