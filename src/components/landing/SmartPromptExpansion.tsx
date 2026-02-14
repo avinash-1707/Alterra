@@ -1,130 +1,67 @@
-"use client";
+import GlassCard from "./GlassCard";
+import GradientBlob from "./GradientBlog";
 
 export default function SmartPromptExpansion() {
   return (
-    <section className="relative py-32 px-6 bg-linear-to-b from-neutral-900/50 to-neutral-800">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-light text-neutral-100 tracking-tight">
-            You Write Simple.{" "}
-            <span className="bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent font-normal">
-              We Think in Detail.
+    <section className="relative py-32 px-6">
+      {/* Background Glow */}
+      <GradientBlob
+        className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-250 h-150"
+        colors="from-violet-500/10 via-purple-500/10 to-transparent"
+        blur="blur-3xl"
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center mb-20">
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            You write simple.
+            <br />
+            <span className="text-5xl md:text-7xl font-serif text-zinc-400">
+              We think in detail.
             </span>
           </h2>
-          <p className="text-lg text-neutral-400 font-light max-w-2xl mx-auto">
-            Our AI transforms your simple ideas into rich, detailed prompts that
-            generate stunning results.
+          <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
+            Our AI automatically expands your prompts with intelligent details,
+            lighting, composition, and style cues.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        {/* Comparison Cards */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Simple Input */}
-          <div className="space-y-4 animate-slide-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-full text-sm text-neutral-400 shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-              Your Input
-            </div>
-            <div className="bg-neutral-700 rounded-3xl p-8 shadow-lg border border-neutral-600 space-y-6 hover:shadow-xl transition-all duration-300">
-              <div className="space-y-3">
-                <div className="text-sm text-neutral-400 font-medium">
-                  You type:
-                </div>
-                <p className="text-2xl font-light text-neutral-100 leading-relaxed">
-                  "A cozy coffee shop"
-                </p>
+          <GlassCard>
+            <div className="p-8">
+              <div className="inline-block px-4 py-1.5 bg-zinc-800/50 rounded-full text-xs uppercase tracking-wider text-zinc-400 mb-6">
+                Your Input
               </div>
-
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>2 seconds to write</span>
+              <p className="text-2xl md:text-3xl font-light text-zinc-300 mb-8">
+                "a cat in a garden"
+              </p>
+              <div className="h-64 bg-zinc-900/50 rounded-2xl flex items-center justify-center">
+                <span className="text-zinc-600 text-sm">Simple prompt</span>
               </div>
             </div>
-          </div>
+          </GlassCard>
 
-          {/* Detailed Output */}
-          <div className="space-y-4 animate-slide-up md:animate-slide-up-delayed">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 rounded-full text-sm text-indigo-400 shadow-lg">
-              <svg
-                className="w-4 h-4 animate-spin-slow"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              AI Enhanced
-            </div>
-            <div className="bg-linear-to-br from-neutral-700 to-neutral-800 rounded-3xl p-8 shadow-xl shadow-indigo-500/10 border border-indigo-500/20 space-y-6 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300">
-              <div className="space-y-3">
-                <div className="text-sm text-indigo-400 font-medium">
-                  We generate:
-                </div>
-                <p className="text-base text-neutral-300 leading-relaxed font-light">
-                  "A warm, inviting coffee shop interior with exposed brick
-                  walls, soft pendant lighting casting a golden glow, wooden
-                  tables with vintage chairs, steam rising from ceramic mugs,
-                  large windows revealing a rainy street outside, plants hanging
-                  from the ceiling, and a barista crafting latte art behind a
-                  marble counter, photorealistic, cozy ambiance, 8k quality"
-                </p>
+          {/* AI Enhanced */}
+          <GlassCard glow>
+            <div className="p-8">
+              <div className="inline-block px-4 py-1.5 bg-lienar-to-r from-orange-500/20 to-pink-500/20 rounded-full text-xs uppercase tracking-wider text-orange-300 mb-6">
+                AI Enhanced
               </div>
-
-              <div className="flex items-center gap-2 text-sm text-indigo-400">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                  />
-                </svg>
-                <span>Enhanced automatically</span>
+              <p className="text-lg md:text-xl font-light text-zinc-400 mb-8 leading-relaxed">
+                "A majestic tabby cat sitting gracefully in a lush English
+                garden, golden hour sunlight filtering through rose bushes, soft
+                bokeh background, cinematic composition, shallow depth of field"
+              </p>
+              <div className="h-64 bg-linear-to-br from-orange-500/10 to-purple-500/10 rounded-2xl flex items-center justify-center border border-orange-500/20">
+                <span className="text-orange-300/60 text-sm">
+                  Cinematic result
+                </span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-indigo-500/10 rounded-full text-sm text-neutral-300">
-            <svg
-              className="w-5 h-5 text-indigo-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span className="font-light">
-              No prompt engineering skills required
-            </span>
-          </div>
+          </GlassCard>
         </div>
       </div>
     </section>
