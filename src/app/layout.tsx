@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     "simple prompts",
     "image consistency",
   ],
+  icons: {
+    icon: "/alterra-logo.png",
+  },
 };
 
 export default function RootLayout({
