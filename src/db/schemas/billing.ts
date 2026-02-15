@@ -8,7 +8,7 @@ import {
   pgEnum,
   numeric,
 } from "drizzle-orm/pg-core";
-import { users } from "./user";
+import { user } from "./auth-schema";
 
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "ACTIVE",
@@ -43,7 +43,7 @@ export const subscriptions = pgTable("subscriptions", {
   id: uuid("id").defaultRandom().primaryKey(),
 
   userId: uuid("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
+    .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
 
   planId: uuid("plan_id")

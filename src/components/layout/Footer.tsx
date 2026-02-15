@@ -15,13 +15,6 @@ export default function Footer() {
     { name: "Press", href: "#press" },
   ];
 
-  const resourceLinks = [
-    { name: "Community", href: "#community" },
-    { name: "Help Center", href: "#help" },
-    { name: "Status", href: "#status" },
-    { name: "Changelog", href: "#changelog" },
-  ];
-
   const legalLinks = [
     { name: "Privacy", href: "#privacy" },
     { name: "Terms", href: "#terms" },
@@ -73,7 +66,7 @@ export default function Footer() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
         {/* Top Section */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <span className="text-2xl font-bold bg-linear-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent mb-4 block">
@@ -122,25 +115,6 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               {companyLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-zinc-500 hover:text-white transition-colors duration-200"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div>
-            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
-              Resources
-            </h3>
-            <ul className="space-y-3">
-              {resourceLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}

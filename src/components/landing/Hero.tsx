@@ -86,9 +86,12 @@ export default function Hero() {
           variants={fadeInUp}
           transition={{ duration: 0.6, ease: premiumEasing, delay: 0.4 }}
         >
-          <LandingButton variant="primary" size="lg">
-            Start Creating Free
-          </LandingButton>
+          <Link href="/dashboard">
+            <LandingButton variant="primary" size="lg">
+              Start Creating Free
+            </LandingButton>
+          </Link>
+
           <Link href="#gallery">
             <LandingButton variant="secondary" size="lg">
               See Examples

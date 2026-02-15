@@ -95,9 +95,11 @@ export default function Navbar() {
               >
                 Sign In
               </Link>
-              <LandingButton variant="primary" size="md">
-                Get Started
-              </LandingButton>
+              <Link href="/dashboard">
+                <LandingButton variant="primary" size="md">
+                  Get Started
+                </LandingButton>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -152,9 +154,11 @@ export default function Navbar() {
                   >
                     Sign In
                   </Link>
-                  <LandingButton variant="primary" size="md">
-                    Get Started
-                  </LandingButton>
+                  <Link href="/dashboard">
+                    <LandingButton variant="primary" size="md">
+                      Get Started
+                    </LandingButton>
+                  </Link>
                 </div>
               </div>
             </div>
