@@ -5,6 +5,7 @@ interface ButtonProps {
   onClick?: () => void;
   type?: "button" | "submit";
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export default function LandingButton({
@@ -14,9 +15,10 @@ export default function LandingButton({
   onClick,
   type = "button",
   fullWidth = false,
+  disabled = false,
 }: ButtonProps) {
   const baseStyles =
-    "rounded-full font-medium transition-all duration-300 active:scale-95";
+    "rounded-full font-medium transition-all duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100";
 
   const sizeStyles = {
     md: `
@@ -44,6 +46,7 @@ export default function LandingButton({
     <button
       type={type}
       onClick={onClick}
+      disabled={disabled}
       className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${widthStyle}`}
     >
       {children}

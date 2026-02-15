@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import LandingButton from "../landing/LandingButton";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { motion, useScroll, useMotionValueEvent } from "motion/react";
+import { createAuthClient } from "better-auth/react";
+
+const { useSession } = createAuthClient();
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
+  const isLoggedIn = Boolean(session?.user);
 
   const { scrollY } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 100) {
@@ -41,7 +41,7 @@ export default function Navbar() {
       ref={ref}
       className="fixed top-0 left-0 right-0 z-50 px-6 py-4"
       initial={{ y: -100, opacity: 0 }}
-      animate={{ y: mounted ? 0 : -100, opacity: mounted ? 1 : 0 }}
+      animate={{ y: 0, opacity: 1 }}
       transition={{
         duration: 0.8,
         ease: [0.22, 1, 0.36, 1],
@@ -89,17 +89,27 @@ export default function Navbar() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/sign-in"
-                className="text-sm text-zinc-400 hover:text-white transition-colors duration-200 px-4"
-              >
-                Sign In
-              </Link>
-              <Link href="/dashboard">
-                <LandingButton variant="primary" size="md">
-                  Get Started
-                </LandingButton>
-              </Link>
+              {isLoggedIn ? (
+                <Link href="/dashboard">
+                  <LandingButton variant="primary" size="md">
+                    Dashboard
+                  </LandingButton>
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200 px-4"
+                  >
+                    Sign In
+                  </Link>
+                  <Link href="/dashboard">
+                    <LandingButton variant="primary" size="md">
+                      Get Started
+                    </LandingButton>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -148,17 +158,28 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <div className="flex flex-col gap-3 pt-4 border-t border-zinc-800/50">
-                  <Link
-                    href="/sign-in"
-                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
-                  >
-                    Sign In
-                  </Link>
-                  <Link href="/dashboard">
-                    <LandingButton variant="primary" size="md">
-                      Get Started
-                    </LandingButton>
-                  </Link>
+                  {isLoggedIn ? (
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      <LandingButton variant="primary" size="md">
+                        Dashboard
+                      </LandingButton>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href="/sign-in"
+                        className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                        <LandingButton variant="primary" size="md">
+                          Get Started
+                        </LandingButton>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

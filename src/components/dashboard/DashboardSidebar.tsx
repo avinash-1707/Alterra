@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { createAuthClient } from "better-auth/react";
+const { useSession } = createAuthClient();
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -14,6 +16,7 @@ export default function DashboardSidebar({
   setOpen,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const navItems = [
     {
@@ -177,16 +180,20 @@ export default function DashboardSidebar({
               href="/dashboard/profile"
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-all duration-200"
             >
-              <div className="w-8 h-8 rounded-full bg-linear-to-br from-orange-500 to-pink-500 flex items-center justify-center shrink-0">
-                <span className="text-white text-xs font-semibold">JD</span>
-              </div>
+              <Image
+                src={session?.user?.image || "/images/avatar_placeholder.png"}
+                alt="User"
+                width={32}
+                height={32}
+                className="rounded-full bg-zinc-900/50 border border-zinc-800/50"
+              />
               {open && (
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm font-medium text-white truncate">
-                    John Doe
+                    {session?.user?.name || "John Doe"}
                   </span>
                   <span className="text-xs text-zinc-500 truncate">
-                    john@example.com
+                    {session?.user?.email || "john@example.com"}
                   </span>
                 </div>
               )}

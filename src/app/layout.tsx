@@ -3,6 +3,7 @@ import { Bebas_Neue, Instrument_Serif, Manrope } from "next/font/google";
 import "./globals.css";
 import { View } from "drizzle-orm";
 import { ViewTransitions } from "next-view-transitions";
+import { Toaster } from "@/components/ui/sonner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -52,7 +53,10 @@ export default function RootLayout({
         lang="en"
         className={`${manrope.variable} ${instrumentSerif.variable} ${bebasNeue.variable}`}
       >
-        <body className={`${manrope.className} antialiased`}>{children}</body>
+        <body className={`${manrope.className} antialiased`}>
+          <Toaster />
+          {children}
+        </body>
       </html>
     </ViewTransitions>
   );

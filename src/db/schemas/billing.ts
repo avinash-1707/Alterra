@@ -33,7 +33,7 @@ export const plans = pgTable("plans", {
   creditsPerMonth: integer("credits_per_month").notNull(),
   maxImageSizeMb: integer("max_image_size_mb").notNull(),
 
-  priorityQueue: boolean("priority_queue").default(false),
+  priorityQueue: boolean("priority_queue").default(false).notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -55,7 +55,7 @@ export const subscriptions = pgTable("subscriptions", {
   currentPeriodStart: timestamp("current_period_start"),
   currentPeriodEnd: timestamp("current_period_end"),
 
-  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false).notNull(),
 
   paymentProvider: paymentProviderEnum("payment_provider").notNull(),
   providerSubscriptionId: varchar("provider_subscription_id", {

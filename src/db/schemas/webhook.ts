@@ -21,7 +21,7 @@ export const webhookEvents = pgTable("webhook_events", {
   eventType: text("event_type").notNull(),
   payload: jsonb("payload").notNull(),
 
-  processed: boolean("processed").default(false),
+  processed: boolean("processed").default(false).notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
