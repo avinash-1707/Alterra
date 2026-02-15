@@ -2,23 +2,56 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import GradientBlob from "../common/GradientBlog";
 import GlassCard from "../common/GlassCard";
 import LandingButton from "../landing/LandingButton";
+import { authFormSchema, type AuthFormValues } from "@/lib/validations/auth-form";
 
 export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(true);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AuthFormValues>({
+    resolver: zodResolver(authFormSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    defaultValues: {
+      isSignUp: true,
+      name: "",
+      email: "",
+      password: "",
+      terms: false,
+    },
+  });
+  const collapsibleClasses = isSignUp
+    ? "transition-all duration-500 ease-in-out overflow-hidden max-h-24 opacity-100"
+    : "transition-all duration-500 ease-in-out overflow-hidden max-h-0 opacity-0 pointer-events-none";
+  const trustBadgeClasses = isSignUp
+    ? "mt-12 text-center transition-all duration-500 ease-in-out opacity-100 translate-y-0"
+    : "mt-12 text-center transition-all duration-500 ease-in-out opacity-0 -translate-y-4 pointer-events-none";
+  const inputClasses =
+    "w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all";
+  const inputErrorClasses =
+    "border-red-500/70 focus:border-red-500/70 focus:ring-red-500/20";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (values: AuthFormValues) => {
     // Handle sign up/sign in logic
     if (isSignUp) {
-      console.log("Sign up:", { name, email, password });
+      console.log("Sign up:", {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
     } else {
-      console.log("Sign in:", { email, password });
+      console.log("Sign in:", {
+        email: values.email,
+        password: values.password,
+      });
     }
   };
 
@@ -28,11 +61,17 @@ export default function AuthForm() {
   };
 
   const toggleMode = () => {
-    setIsSignUp(!isSignUp);
-    // Reset form fields when toggling
-    setName("");
-    setEmail("");
-    setPassword("");
+    setIsSignUp((prev) => {
+      const next = !prev;
+      reset({
+        isSignUp: next,
+        name: "",
+        email: "",
+        password: "",
+        terms: false,
+      });
+      return next;
+    });
   };
 
   return (
@@ -104,15 +143,16 @@ export default function AuthForm() {
             </div>
 
             {/* Auth Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <input
+                type="hidden"
+                value={isSignUp ? "true" : "false"}
+                {...register("isSignUp", {
+                  setValueAs: (value) => value === true || value === "true",
+                })}
+              />
               {/* Name Input - Only for Sign Up */}
-              <div
-                className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                  isSignUp
-                    ? "max-h-24 opacity-100"
-                    : "max-h-0 opacity-0 pointer-events-none"
-                }`}
-              >
+              <div className={collapsibleClasses}>
                 <label
                   htmlFor="name"
                   className="block text-sm font-medium text-zinc-400 mb-2"
@@ -122,13 +162,14 @@ export default function AuthForm() {
                 <input
                   type="text"
                   id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all"
-                  required={isSignUp}
+                  className={`${inputClasses} ${errors.name ? inputErrorClasses : ""}`}
+                  {...register("name")}
                   disabled={!isSignUp}
                 />
+                {isSignUp && errors.name && (
+                  <p className="mt-2 text-xs text-red-400">{errors.name.message}</p>
+                )}
               </div>
 
               {/* Email Input */}
@@ -142,12 +183,13 @@ export default function AuthForm() {
                 <input
                   type="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all"
-                  required
+                  className={`${inputClasses} ${errors.email ? inputErrorClasses : ""}`}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="mt-2 text-xs text-red-400">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Password Input */}
@@ -171,27 +213,21 @@ export default function AuthForm() {
                 <input
                   type="password"
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all"
-                  required
+                  className={`${inputClasses} ${errors.password ? inputErrorClasses : ""}`}
+                  {...register("password")}
                 />
-                {isSignUp && (
+                {errors.password ? (
+                  <p className="mt-2 text-xs text-red-400">{errors.password.message}</p>
+                ) : isSignUp ? (
                   <p className="mt-2 text-xs text-zinc-500">
                     Must be at least 8 characters
                   </p>
-                )}
+                ) : null}
               </div>
 
               {/* Terms Checkbox - Only for Sign Up */}
-              <div
-                className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                  isSignUp
-                    ? "max-h-24 opacity-100"
-                    : "max-h-0 opacity-0 pointer-events-none"
-                }`}
-              >
+              <div className={collapsibleClasses}>
                 <div className="flex items-start">
                   <input
                     type="checkbox"
@@ -199,7 +235,7 @@ export default function AuthForm() {
                     className="w-4 h-4 mt-0.5 rounded-full border-2 border-zinc-700 bg-zinc-900/50 text-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all cursor-pointer appearance-none relative
                     checked:bg-orange-500 checked:border-orange-500
                     checked:after:content-['✓'] checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center checked:after:text-white checked:after:text-[10px] checked:after:font-bold"
-                    required={isSignUp}
+                    {...register("terms")}
                     disabled={!isSignUp}
                   />
                   <label htmlFor="terms" className="ml-2 text-sm text-zinc-400">
@@ -219,6 +255,9 @@ export default function AuthForm() {
                     </Link>
                   </label>
                 </div>
+                {isSignUp && errors.terms && (
+                  <p className="mt-2 text-xs text-red-400">{errors.terms.message}</p>
+                )}
               </div>
 
               {/* Submit Button */}
@@ -248,13 +287,7 @@ export default function AuthForm() {
         </div>
 
         {/* Trust Badge - Only for Sign Up */}
-        <div
-          className={`mt-12 text-center transition-all duration-500 ease-in-out ${
-            isSignUp
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none"
-          }`}
-        >
+        <div className={trustBadgeClasses}>
           <p className="text-xs text-zinc-600 uppercase tracking-wider mb-4">
             Trusted by 50,000+ creators
           </p>
