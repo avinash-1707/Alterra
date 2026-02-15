@@ -30,9 +30,9 @@ export default function Navbar() {
   });
 
   const navLinks = [
-    { name: "Features", href: "#features" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Gallery", href: "#gallery" },
+    { name: "Features", href: "/#features" },
+    { name: "How It Works", href: "/#how-it-works" },
+    { name: "Gallery", href: "/#gallery" },
     { name: "Pricing", href: "/pricing" },
   ];
 

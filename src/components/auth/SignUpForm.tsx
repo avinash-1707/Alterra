@@ -196,7 +196,9 @@ export default function AuthForm() {
                   <input
                     type="checkbox"
                     id="terms"
-                    className="w-4 h-4 mt-0.5 rounded-full border-2 border-zinc-700 bg-zinc-900/50 text-orange-500 focus:ring-2 focus:ring-orange-500/20 checked:bg-orange-500 checked:border-orange-500 transition-all cursor-pointer"
+                    className="w-4 h-4 mt-0.5 rounded-full border-2 border-zinc-700 bg-zinc-900/50 text-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all cursor-pointer appearance-none relative
+                    checked:bg-orange-500 checked:border-orange-500
+                    checked:after:content-['✓'] checked:after:absolute checked:after:inset-0 checked:after:flex checked:after:items-center checked:after:justify-center checked:after:text-white checked:after:text-[10px] checked:after:font-bold"
                     required={isSignUp}
                     disabled={!isSignUp}
                   />
@@ -266,27 +268,6 @@ export default function AuthForm() {
           </div>
         </div>
       </div>
-
-      {/* Custom Checkbox Styles */}
-      <style jsx global>{`
-        input[type="checkbox"] {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-        }
-
-        input[type="checkbox"]:checked::before {
-          content: "✓";
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-          color: white;
-          font-size: 10px;
-          font-weight: bold;
-        }
-      `}</style>
     </section>
   );
 }
