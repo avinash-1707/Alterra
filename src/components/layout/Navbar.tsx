@@ -3,6 +3,7 @@
 import { useState } from "react";
 import LandingButton from "../landing/LandingButton";
 import { Link } from "next-view-transitions";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,15 +19,17 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto">
         {/* Glass Container */}
-        <div className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-full px-6 py-3 shadow-2xl">
+        <div className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-full px-6 py-3 pl-8 shadow-2xl">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/">
-              <div className="flex items-center">
-                <span className="text-2xl font-bold bg-linear-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
-                  Alterra
-                </span>
-              </div>
+              <Image
+                src="/alterra-logo.png"
+                alt="Alterra Logo"
+                width={36}
+                height={24}
+                className="invert"
+              />
             </Link>
 
             {/* Desktop Navigation */}

@@ -1,3 +1,4 @@
+import { Link } from "next-view-transitions";
 import GradientBlob from "../common/GradientBlog";
 import LandingButton from "./LandingButton";
 import PromptInput from "./PromptInput";
@@ -42,9 +43,11 @@ export default function Hero() {
           <LandingButton variant="primary" size="lg">
             Start Creating Free
           </LandingButton>
-          <LandingButton variant="secondary" size="lg">
-            See Examples
-          </LandingButton>
+          <Link href="#gallery">
+            <LandingButton variant="secondary" size="lg">
+              See Examples
+            </LandingButton>
+          </Link>
         </div>
 
         {/* Small Caption */}

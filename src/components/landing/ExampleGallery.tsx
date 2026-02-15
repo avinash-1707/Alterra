@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const getAspectClass = (size: string) => {
   switch (size) {
     case "large":
@@ -11,16 +13,46 @@ const getAspectClass = (size: string) => {
 
 export default function ExampleGallery() {
   const examples = [
-    { title: "Portrait", category: "Character", size: "large" },
-    { title: "Landscape", category: "Nature", size: "medium" },
-    { title: "Architecture", category: "Urban", size: "small" },
-    { title: "Abstract", category: "Art", size: "medium" },
-    { title: "Product", category: "Commercial", size: "small" },
-    { title: "Fantasy", category: "Concept", size: "large" },
+    {
+      title: "Portrait",
+      category: "Character",
+      size: "large",
+      src: "/images/examples/portrait.png",
+    },
+    {
+      title: "Landscape",
+      category: "Nature",
+      size: "medium",
+      src: "/images/examples/landscape.png",
+    },
+    {
+      title: "Architecture",
+      category: "Urban",
+      size: "small",
+      src: "/images/examples/architecture.png",
+    },
+    {
+      title: "Abstract",
+      category: "Art",
+      size: "medium",
+      src: "/images/examples/abstract.png",
+    },
+    {
+      title: "Product",
+      category: "Commercial",
+      size: "small",
+      src: "/images/examples/product.png",
+    },
+    {
+      title: "Fantasy",
+      category: "Concept",
+      size: "large",
+      src: "/images/examples/fantasy.png",
+    },
   ];
 
   return (
-    <section className="relative py-32 px-6 bg-zinc-950/30">
+    <section id="gallery" className="relative py-32 px-6 bg-zinc-950/30">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-20">
@@ -39,10 +71,12 @@ export default function ExampleGallery() {
               <div
                 className={`relative ${getAspectClass(example.size)} bg-zinc-900/50 rounded-2xl overflow-hidden border border-zinc-800/50 hover:border-zinc-700 transition-all duration-300 cursor-pointer`}
               >
-                {/* Placeholder */}
-                <div className="w-full h-full bg-linear-to-br from-zinc-900 to-zinc-950 flex items-center justify-center">
-                  <span className="text-zinc-700 text-sm">{example.title}</span>
-                </div>
+                <Image
+                  src={example.src}
+                  alt={example.title}
+                  fill
+                  className="object-cover"
+                />
 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">

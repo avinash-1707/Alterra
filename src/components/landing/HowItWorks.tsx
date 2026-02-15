@@ -23,7 +23,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="relative py-32 px-6">
+    <section id="how-it-works" className="relative py-32 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-20">
