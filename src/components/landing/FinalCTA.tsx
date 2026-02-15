@@ -1,3 +1,4 @@
+import { Link } from "next-view-transitions";
 import GradientBlob from "../common/GradientBlog";
 import LandingButton from "./LandingButton";
 
@@ -32,9 +33,11 @@ export default function FinalCTA() {
           <LandingButton variant="primary" size="lg">
             Get Started Free
           </LandingButton>
-          <LandingButton variant="secondary" size="lg">
-            View Pricing
-          </LandingButton>
+          <Link href="/pricing">
+            <LandingButton variant="secondary" size="lg">
+              View Pricing
+            </LandingButton>
+          </Link>
         </div>
 
         {/* Caption */}

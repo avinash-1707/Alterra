@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto">
         {/* Glass Container */}
-        <div className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-full px-6 py-3 pl-8 shadow-2xl">
+        <div className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl md:rounded-full px-6 py-3 pl-8 shadow-2xl">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/">
@@ -47,12 +47,12 @@ export default function Navbar() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-3">
-              <a
-                href="#login"
+              <Link
+                href="/sign-in"
                 className="text-sm text-zinc-400 hover:text-white transition-colors duration-200 px-4"
               >
                 Sign In
-              </a>
+              </Link>
               <LandingButton variant="primary" size="md">
                 Get Started
               </LandingButton>
@@ -105,7 +105,7 @@ export default function Navbar() {
                 ))}
                 <div className="flex flex-col gap-3 pt-4 border-t border-zinc-800/50">
                   <Link
-                    href="#login"
+                    href="/sign-in"
                     className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                   >
                     Sign In

@@ -4,7 +4,7 @@ import GradientBlob from "../common/GradientBlog";
 
 export default function SmartPromptExpansion() {
   return (
-    <section className="relative py-32 px-6">
+    <section id="features" className="relative py-32 px-6">
       {/* Background Glow */}
       <GradientBlob
         className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-250 h-150"
@@ -41,7 +41,7 @@ export default function SmartPromptExpansion() {
               </p>
               <div className="relative h-64 bg-zinc-900/50 rounded-2xl overflow-hidden">
                 <Image
-                  src="/images/no_enhancement.png"
+                  src="/images/prompt-expansion/no_enhancement.png"
                   alt="Simple prompt result"
                   fill
                   className="object-cover"
@@ -63,7 +63,7 @@ export default function SmartPromptExpansion() {
               </p>
               <div className="relative h-64 bg-linear-to-br from-orange-500/10 to-purple-500/10 rounded-2xl overflow-hidden border border-orange-500/20">
                 <Image
-                  src="/images/with_enhancement.png"
+                  src="/images/prompt-expansion/with_enhancement.png"
                   alt="Cinematic enhanced result"
                   fill
                   className="object-cover"

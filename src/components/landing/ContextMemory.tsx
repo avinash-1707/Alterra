@@ -1,3 +1,4 @@
+import Image from "next/image";
 import GlassCard from "../common/GlassCard";
 import GradientBlob from "../common/GradientBlog";
 
@@ -37,12 +38,17 @@ export default function ContextMemory() {
                   Saved Context
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2">
-                  {[1, 2, 3].map((i) => (
+                  {["angle-1.png", "angle-2.png"].map((imageName, i) => (
                     <div
-                      key={i}
-                      className="shrink-0 w-32 h-32 bg-zinc-900/50 rounded-xl border border-zinc-800/50 flex items-center justify-center"
+                      key={imageName}
+                      className="relative shrink-0 w-32 h-32 bg-zinc-900/50 rounded-xl border border-zinc-800/50 overflow-hidden"
                     >
-                      <span className="text-zinc-600 text-xs">Image {i}</span>
+                      <Image
+                        src={`/images/context/${imageName}`}
+                        alt={`Context angle ${i + 1}`}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                   ))}
                   <div className="shrink-0 w-32 h-32 bg-zinc-900/30 border-2 border-dashed border-zinc-700 rounded-xl flex items-center justify-center hover:border-zinc-600 transition-colors cursor-pointer">
@@ -57,14 +63,24 @@ export default function ContextMemory() {
                   Consistent Generations
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {["Beach", "Forest", "City", "Studio"].map((scene) => (
-                    <div key={scene} className="relative group">
-                      <div className="aspect-square bg-linear-to-br from-zinc-900/80 to-zinc-950/80 rounded-xl border border-zinc-800/50 flex items-center justify-center overflow-hidden">
-                        <span className="text-zinc-600 text-sm">{scene}</span>
+                  {[
+                    { scene: "Beach", src: "/images/context/beach.png" },
+                    { scene: "Forest", src: "/images/context/forest.png" },
+                    { scene: "City", src: "/images/context/city.png" },
+                    { scene: "Studio", src: "/images/context/studio.png" },
+                  ].map((item) => (
+                    <div key={item.scene} className="relative group">
+                      <div className="relative aspect-square bg-linear-to-br from-zinc-900/80 to-zinc-950/80 rounded-xl border border-zinc-800/50 overflow-hidden">
+                        <Image
+                          src={item.src}
+                          alt={`${item.scene} scene`}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                       <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-end p-3">
                         <span className="text-xs text-white font-medium">
-                          {scene} scene
+                          {item.scene} scene
                         </span>
                       </div>
                     </div>
