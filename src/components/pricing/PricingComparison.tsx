@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import GlassCard from "../common/GlassCard";
 
 export default function PricingComparison() {
@@ -126,12 +127,12 @@ export default function PricingComparison() {
   };
 
   return (
-    <section className="relative py-20 px-6 bg-zinc-950/30">
+    <section className="relative bg-zinc-950/30 px-4 py-14 sm:px-6 sm:py-16 md:py-20">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4">Compare plans</h2>
-          <p className="text-lg text-zinc-500">
+        <div className="mb-10 text-center sm:mb-12 md:mb-16">
+          <h2 className="mb-3 text-3xl font-bold sm:mb-4 sm:text-4xl md:text-5xl lg:text-6xl">Compare plans</h2>
+          <p className="text-base text-zinc-500 sm:text-lg">
             Detailed feature comparison across all tiers
           </p>
         </div>
@@ -139,30 +140,30 @@ export default function PricingComparison() {
         {/* Comparison Table */}
         <GlassCard>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[680px]">
               <thead>
                 <tr className="border-b border-zinc-800">
-                  <th className="text-left p-6 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+                  <th className="p-4 text-left text-xs font-semibold tracking-wider text-zinc-400 uppercase sm:p-6 sm:text-sm">
                     Feature
                   </th>
-                  <th className="text-center p-6 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+                  <th className="p-4 text-center text-xs font-semibold tracking-wider text-zinc-400 uppercase sm:p-6 sm:text-sm">
                     Free
                   </th>
-                  <th className="text-center p-6 text-sm font-semibold uppercase tracking-wider text-orange-400">
+                  <th className="p-4 text-center text-xs font-semibold tracking-wider text-orange-400 uppercase sm:p-6 sm:text-sm">
                     Pro
                   </th>
-                  <th className="text-center p-6 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+                  <th className="p-4 text-center text-xs font-semibold tracking-wider text-zinc-400 uppercase sm:p-6 sm:text-sm">
                     Enterprise
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {features.map((category, catIndex) => (
-                  <>
-                    <tr key={`cat-${catIndex}`} className="bg-zinc-900/30">
+                  <Fragment key={`cat-${catIndex}`}>
+                    <tr className="bg-zinc-900/30">
                       <td
                         colSpan={4}
-                        className="p-4 text-sm font-semibold text-white uppercase tracking-wider"
+                        className="p-3 text-xs font-semibold tracking-wider text-white uppercase sm:p-4 sm:text-sm"
                       >
                         {category.category}
                       </td>
@@ -170,23 +171,23 @@ export default function PricingComparison() {
                     {category.items.map((item, itemIndex) => (
                       <tr
                         key={`item-${catIndex}-${itemIndex}`}
-                        className="border-b border-zinc-900/50 hover:bg-zinc-900/20 transition-colors"
+                        className="border-b border-zinc-900/50 transition-colors hover:bg-zinc-900/20"
                       >
-                        <td className="p-4 text-sm text-zinc-300">
+                        <td className="p-3 text-xs text-zinc-300 sm:p-4 sm:text-sm">
                           {item.name}
                         </td>
-                        <td className="p-4 text-center">
+                        <td className="p-3 text-center sm:p-4">
                           {renderValue(item.free)}
                         </td>
-                        <td className="p-4 text-center bg-zinc-900/20">
+                        <td className="bg-zinc-900/20 p-3 text-center sm:p-4">
                           {renderValue(item.pro)}
                         </td>
-                        <td className="p-4 text-center">
+                        <td className="p-3 text-center sm:p-4">
                           {renderValue(item.enterprise)}
                         </td>
                       </tr>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

@@ -69,13 +69,13 @@ export default function PricingCards() {
   ];
 
   return (
-    <section className="relative pb-20 pt-8 px-6">
+    <section className="relative px-4 pt-6 pb-16 sm:px-6 sm:pt-8 sm:pb-20">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center gap-4 mb-10">
+        <div className="mb-8 flex flex-wrap items-center justify-center gap-3 sm:mb-10 sm:gap-4">
           <span
-            className={
+            className={`text-sm sm:text-base ${
               billingCycle === "monthly" ? "text-white" : "text-zinc-500"
-            }
+            }`}
           >
             Monthly
           </span>
@@ -85,23 +85,23 @@ export default function PricingCards() {
             onCheckedChange={(checked) =>
               setBillingCycle(checked ? "annual" : "monthly")
             }
-            className="h-10 w-20 border-zinc-700 data-[state=unchecked]:bg-zinc-800 data-[state=checked]:bg-linear-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-pink-500"
+            className="h-9 w-16 border-zinc-700 sm:h-10 sm:w-20 data-[state=unchecked]:bg-zinc-800 data-[state=checked]:bg-linear-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-pink-500"
           />
           <span
-            className={
+            className={`text-sm sm:text-base ${
               billingCycle === "annual"
                 ? "text-white font-medium"
                 : "text-zinc-500"
-            }
+            }`}
           >
             Annual
           </span>
-          <span className="px-3 py-1 bg-linear-to-r from-orange-500/20 to-pink-500/20 text-orange-300 text-xs rounded-full font-medium border border-orange-500/30">
+          <span className="rounded-full border border-orange-500/30 bg-linear-to-r from-orange-500/20 to-pink-500/20 px-2.5 py-1 text-[11px] font-medium text-orange-300 sm:px-3 sm:text-xs">
             Save 20%
           </span>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {plans.map((plan, index) => {
             const price =
               billingCycle === "annual" ? plan.annualPrice : plan.monthlyPrice;
@@ -114,29 +114,35 @@ export default function PricingCards() {
               <div key={index} className="relative">
                 {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                    <span className="px-4 py-1.5 bg-linear-to-r from-orange-500 to-pink-500 rounded-full text-xs font-medium uppercase tracking-wider">
+                  <div className="absolute -top-3 left-1/2 z-20 -translate-x-1/2 sm:-top-4">
+                    <span className="rounded-full bg-linear-to-r from-orange-500 to-pink-500 px-3 py-1 text-[10px] font-medium tracking-wider uppercase sm:px-4 sm:py-1.5 sm:text-xs">
                       Most Popular
                     </span>
                   </div>
                 )}
 
                 <GlassCard glow={plan.popular} className="h-full">
-                  <div className="p-8 flex flex-col h-full">
+                  <div className="flex h-full flex-col p-5 sm:p-6 lg:p-8">
                     {/* Plan Header */}
-                    <div className="mb-8">
-                      <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                      <p className="text-sm text-zinc-500">
+                    <div className="mb-6 sm:mb-8">
+                      <h3 className="mb-2 text-xl font-bold sm:text-2xl">
+                        {plan.name}
+                      </h3>
+                      <p className="text-sm text-zinc-500 leading-relaxed">
                         {plan.description}
                       </p>
                     </div>
 
                     {/* Price */}
-                    <div className="mb-8">
+                    <div className="mb-6 sm:mb-8">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-5xl font-bold">{price}</span>
+                        <span className="text-4xl font-bold sm:text-5xl">
+                          {price}
+                        </span>
                         {period !== "contact us" && period !== "forever" && (
-                          <span className="text-zinc-500">/mo</span>
+                          <span className="text-sm text-zinc-500 sm:text-base">
+                            /mo
+                          </span>
                         )}
                       </div>
                       {(period === "contact us" || period === "forever") && (
@@ -150,11 +156,11 @@ export default function PricingCards() {
                     </div>
 
                     {/* Features */}
-                    <ul className="space-y-4 mb-8 grow">
+                    <ul className="mb-6 grow space-y-3 sm:mb-8 sm:space-y-4">
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-3">
                           <svg
-                            className="w-5 h-5 text-orange-400 shrink-0 mt-0.5"
+                            className="mt-0.5 h-4 w-4 shrink-0 text-orange-400 sm:h-5 sm:w-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -166,7 +172,7 @@ export default function PricingCards() {
                               d="M5 13l4 4L19 7"
                             />
                           </svg>
-                          <span className="text-zinc-300 text-sm">
+                          <span className="text-sm leading-relaxed text-zinc-300">
                             {feature}
                           </span>
                         </li>
