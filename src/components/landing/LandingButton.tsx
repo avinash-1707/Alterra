@@ -15,11 +15,20 @@ export default function LandingButton({
   type = "button",
   fullWidth = false,
 }: ButtonProps) {
-  const baseStyles = "rounded-full font-medium transition-all duration-300";
+  const baseStyles =
+    "rounded-full font-medium transition-all duration-300 active:scale-95";
 
   const sizeStyles = {
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg",
+    md: `
+      px-4 py-2 text-sm
+      sm:px-6 sm:py-3 sm:text-base
+      lg:px-7 lg:py-3.5 lg:text-base
+    `,
+    lg: `
+      px-5 py-3 text-base
+      sm:px-7 sm:py-4 sm:text-lg
+      lg:px-9 lg:py-4 lg:text-xl
+    `,
   };
 
   const variantStyles = {
@@ -29,7 +38,7 @@ export default function LandingButton({
       "bg-zinc-900 text-white border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700",
   };
 
-  const widthStyle = fullWidth ? "w-full" : "inline-block";
+  const widthStyle = fullWidth ? "w-full sm:w-auto" : "w-auto";
 
   return (
     <button

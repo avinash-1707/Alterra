@@ -1,12 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import LandingButton from "../landing/LandingButton";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const { scrollY } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    if (latest > 100) {
+      setVisible(true);
+    } else {
+      setVisible(false);
+    }
+  });
 
   const navLinks = [
     { name: "Features", href: "#features" },
@@ -16,10 +37,31 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+    <motion.nav
+      ref={ref}
+      className="fixed top-0 left-0 right-0 z-50 px-6 py-4"
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: mounted ? 0 : -100, opacity: mounted ? 1 : 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
       <div className="max-w-7xl mx-auto">
-        {/* Glass Container */}
-        <div className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl md:rounded-full px-6 py-3 pl-8 shadow-2xl">
+        {/* Glass Container with Floating Animation */}
+        <motion.div
+          animate={{
+            width: visible ? "70%" : "100%",
+            y: visible ? 20 : 0,
+            backdropFilter: visible ? "blur(24px)" : "blur(16px)",
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 50,
+          }}
+          className="relative bg-zinc-950/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl md:rounded-full px-6 py-3 pl-8 shadow-2xl mx-auto"
+        >
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/">
@@ -117,11 +159,11 @@ export default function Navbar() {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Subtle glow effect */}
         <div className="absolute inset-0 bg-linear-to-r from-orange-500/5 to-purple-500/5 rounded-full blur-xl -z-10 pointer-events-none" />
       </div>
-    </nav>
+    </motion.nav>
   );
 }
