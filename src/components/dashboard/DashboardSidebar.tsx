@@ -2,9 +2,12 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import type { DashboardTab } from "./dashboard-tabs";
 import type { DashboardSession } from "./types";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Link } from "next-view-transitions";
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -19,6 +22,7 @@ export default function DashboardSidebar({
   activeTab,
   session,
 }: DashboardSidebarProps) {
+  const router = useRouter();
   const navItems: Array<{
     label: string;
     tab: DashboardTab;
@@ -30,7 +34,12 @@ export default function DashboardSidebar({
       tab: "overview",
       href: "/dashboard?tab=overview",
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -45,7 +54,12 @@ export default function DashboardSidebar({
       tab: "generate",
       href: "/dashboard?tab=generate",
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -60,7 +74,12 @@ export default function DashboardSidebar({
       tab: "hub",
       href: "/dashboard?tab=hub",
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -75,7 +94,12 @@ export default function DashboardSidebar({
       tab: "context",
       href: "/dashboard?tab=context",
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -86,6 +110,20 @@ export default function DashboardSidebar({
       ),
     },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/login"); // redirect to login page
+          },
+        },
+      });
+    } catch (error) {
+      toast.error("Error signing out");
+    }
+  };
 
   return (
     <>
@@ -105,7 +143,11 @@ export default function DashboardSidebar({
               height={20}
               className="rounded-md invert"
             />
-            {open && <span className="font-bebas text-2xl font-bold text-white">Alterra</span>}
+            {open && (
+              <span className="font-bebas text-2xl font-bold text-white">
+                Alterra
+              </span>
+            )}
           </Link>
 
           <nav className="flex-1 space-y-2">
@@ -133,7 +175,31 @@ export default function DashboardSidebar({
             })}
           </nav>
 
-          <div className="mt-auto border-t border-zinc-800/50 pt-4">
+          <div className="mt-auto space-y-2 border-t border-zinc-800/50 pt-4">
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-zinc-400 transition-all duration-200 hover:bg-zinc-900/50 hover:text-red-400"
+            >
+              <svg
+                className="h-5 w-5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              {open && (
+                <span className="whitespace-nowrap text-sm font-medium">
+                  Sign Out
+                </span>
+              )}
+            </button>
+
             <Link
               href="/dashboard/profile"
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-zinc-400 transition-all duration-200 hover:bg-zinc-900/50 hover:text-white"
@@ -174,7 +240,12 @@ export default function DashboardSidebar({
             onClick={() => setOpen(!open)}
             className="p-2 text-zinc-400 transition-colors hover:text-white"
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
