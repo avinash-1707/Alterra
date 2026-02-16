@@ -83,14 +83,6 @@ export default function ContextManager() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-3">context manager</h2>
-        <p className="text-lg text-zinc-400">
-          Upload, organize, and version context data used during generation.
-        </p>
-      </div>
-
       {/* Upload Section */}
       <GlassCard>
         <div className="p-8">

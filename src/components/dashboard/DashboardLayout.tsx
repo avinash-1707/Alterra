@@ -12,8 +12,11 @@ interface DashboardLayoutProps {
   session: DashboardSession | null;
 }
 
-export default function DashboardLayout({ activeTab, session }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+export default function DashboardLayout({
+  activeTab,
+  session,
+}: DashboardLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
