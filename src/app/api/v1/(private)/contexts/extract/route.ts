@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import { extractImageContext } from "@/utils/ai/extractImageContext";
-import { contexts } from "@/db";
 import { authClient } from "@/lib/server-auth-client";
 
-// Configure route for file uploads
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Maximum file size (10MB)
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
@@ -54,26 +50,14 @@ export async function POST(req: NextRequest) {
     const base64 = buffer.toString("base64");
     const mimeType = file.type;
 
-    // Extract context using AI
+    // Extract context using AI (no DB save yet)
     const extracted = await extractImageContext(base64, mimeType);
 
-    // Insert into database
-    const inserted = await db
-      .insert(contexts)
-      .values({
-        userId: session.user.id,
-        name: extracted.name,
-        structuredData: extracted.structuredData,
-        aiPromptBlock: extracted.aiPromptBlock,
-        tags: extracted.tags,
-      })
-      .returning();
-
-    return NextResponse.json(inserted[0], { status: 201 });
+    // Return extracted data for preview
+    return NextResponse.json(extracted, { status: 200 });
   } catch (error) {
     console.error("Context extraction error:", error);
 
-    // Return specific error messages for better debugging
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
