@@ -1,84 +1,173 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
 import GlassCard from "@/components/common/GlassCard";
 import ContextUpload from "../context-manager/ContextUpload";
 import ExtractedContext from "../context-manager/ExtractedContext";
 import SavedContexts from "../context-manager/SavedContexts";
 import ContextModal from "../context-manager/ContextModal";
-interface Context {
-  id: string;
-  name: string;
-  description: string;
-  keywords: string[];
-  createdAt: Date;
-  imageUrl?: string;
-}
+import { ExtractedContextInterface } from "@/utils/ai/extractImageContext";
+import { Context, CreateContextDTO, UpdateContextDTO } from "@/types/context";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useContexts } from "@/hooks/useContexts";
 
 export default function ContextManager() {
-  const [extractedContext, setExtractedContext] = useState<Context | null>(
-    null,
-  );
+  const queryClient = useQueryClient();
+
+  const [extractedContext, setExtractedContext] =
+    useState<ExtractedContextInterface | null>(null);
   const [selectedContext, setSelectedContext] = useState<Context | null>(null);
-  const [savedContexts, setSavedContexts] = useState<Context[]>([
-    {
-      id: "1",
-      name: "Cyberpunk Character",
-      description:
-        "Neon-lit futuristic character with chrome implants, purple hair, wearing tech-enhanced jacket",
-      keywords: ["cyberpunk", "neon", "character", "futuristic", "chrome"],
-      createdAt: new Date("2024-02-10"),
-    },
-    {
-      id: "2",
-      name: "Mountain Landscape",
-      description:
-        "Misty mountain peaks at sunrise, dramatic lighting, golden hour atmosphere",
-      keywords: ["landscape", "mountains", "sunrise", "atmospheric", "nature"],
-      createdAt: new Date("2024-02-12"),
-    },
-    {
-      id: "3",
-      name: "Abstract Geometry",
-      description:
-        "Clean geometric shapes with gradient colors, minimalist composition",
-      keywords: ["abstract", "geometric", "minimal", "gradient", "modern"],
-      createdAt: new Date("2024-02-15"),
-    },
-  ]);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+
+  // Fetch contexts with pagination
+  const {
+    data: contextsData,
+    isLoading,
+    isError,
+    error,
+  } = useContexts({
+    page,
+    limit: 10,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  const savedContexts = contextsData?.data ?? [];
+  const meta = contextsData?.meta;
+
+  // Create context mutation
+  const createContextMutation = useMutation({
+    mutationFn: async (newContext: CreateContextDTO) => {
+      const response = await axios.post("/api/v1/contexts", newContext);
+      return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate and refetch contexts
+      queryClient.invalidateQueries({ queryKey: ["contexts"] });
+      setExtractedContext(null);
+    },
+    onError: (error) => {
+      console.error("Failed to create context:", error);
+      throw new Error("Failed to save context");
+    },
+  });
+
+  // Update context mutation
+  const updateContextMutation = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateContextDTO;
+    }) => {
+      const response = await axios.patch(`/api/v1/contexts/${id}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contexts"] });
+    },
+    onError: (error) => {
+      console.error("Failed to update context:", error);
+      throw new Error("Failed to update context");
+    },
+  });
+
+  // Delete context mutation
+  const deleteContextMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await axios.delete(`/api/v1/contexts/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contexts"] });
+    },
+    onError: (error) => {
+      console.error("Failed to delete context:", error);
+      throw new Error("Failed to delete context");
+    },
+  });
+
+  // Extract context from image
   const handleExtractContext = async (file: File) => {
-    // Simulate API call to extract context
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
 
-    // Mock extracted context
-    const mockContext: Context = {
-      id: Date.now().toString(),
-      name: file.name.replace(/\.[^/.]+$/, ""),
-      description:
-        "A detailed scene featuring dramatic lighting, cinematic composition with vibrant colors and intricate details",
-      keywords: ["dramatic", "cinematic", "vibrant", "detailed", "atmospheric"],
-      createdAt: new Date(),
-      imageUrl: URL.createObjectURL(file),
-    };
+      const response = await axios.post("/api/v1/contexts/extract", formData);
+      const data = response.data as ExtractedContextInterface;
 
-    setExtractedContext(mockContext);
-  };
-
-  const handleSaveContext = (context: Context) => {
-    setSavedContexts([context, ...savedContexts]);
-    setExtractedContext(null);
-  };
-
-  const handleDeleteContext = (id: string) => {
-    setSavedContexts(savedContexts.filter((ctx) => ctx.id !== id));
-    if (selectedContext?.id === id) {
-      setSelectedContext(null);
+      setExtractedContext(data);
+    } catch (error) {
+      console.error("Failed to extract context:", error);
+      throw new Error("Extraction failed");
     }
   };
 
-  const handleContextClick = (context: Context) => {
-    setSelectedContext(context);
+  // Save extracted context
+  const handleSaveContext = async (contextData: CreateContextDTO) => {
+    try {
+      await createContextMutation.mutateAsync(contextData);
+    } catch (error) {
+      console.error("Failed to save context:", error);
+    }
+  };
+
+  // Update existing context
+  const handleUpdateContext = async (id: string, updates: UpdateContextDTO) => {
+    try {
+      await updateContextMutation.mutateAsync({ id, data: updates });
+
+      // Update selected context if it's the one being updated
+      if (selectedContext?.id === id) {
+        const response = await axios.get(`/api/contexts/${id}`);
+        setSelectedContext(response.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to update context:", error);
+    }
+  };
+
+  // Delete context
+  const handleDeleteContext = async (id: string) => {
+    try {
+      await deleteContextMutation.mutateAsync(id);
+
+      // Clear selected context if it was deleted
+      if (selectedContext?.id === id) {
+        setSelectedContext(null);
+      }
+    } catch (error) {
+      console.error("Failed to delete context:", error);
+    }
+  };
+
+  // Select context and fetch full details
+  const handleContextClick = async (context: Context) => {
+    try {
+      // Fetch full context details
+      const response = await axios.get(`/api/contexts/${context.id}`);
+      setSelectedContext(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch context details:", error);
+      // Fallback to the context from list
+      setSelectedContext(context);
+    }
+  };
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (meta?.hasNextPage) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (meta?.hasPreviousPage) {
+      setPage((prev) => prev - 1);
+    }
   };
 
   return (
@@ -103,6 +192,21 @@ export default function ContextManager() {
         contexts={savedContexts}
         onContextClick={handleContextClick}
         onDelete={handleDeleteContext}
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
+        // Pagination props
+        pagination={
+          meta && {
+            currentPage: meta.currentPage,
+            totalPages: meta.totalPages,
+            totalCount: meta.totalCount,
+            hasNextPage: meta.hasNextPage,
+            hasPreviousPage: meta.hasPreviousPage,
+            onNext: handleNextPage,
+            onPrevious: handlePreviousPage,
+          }
+        }
       />
 
       {/* Context Modal */}

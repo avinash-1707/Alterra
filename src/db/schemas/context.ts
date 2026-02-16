@@ -18,14 +18,16 @@ export const contexts = pgTable("contexts", {
 
   name: text("name").notNull(), // user-friendly label like "Cyberpunk Portrait Style"
 
-  // 🔥 AI-Optimized Structured Data
+  // AI-Optimized Structured Data
   structuredData: jsonb("structured_data").notNull(),
 
-  // 🔥 Preformatted AI Prompt Block
+  // Preformatted AI Prompt Block
   aiPromptBlock: text("ai_prompt_block").notNull(),
 
   // Optional tagging system
   tags: jsonb("tags"), // ["cyberpunk", "neon", "portrait"]
+  model: text("model"), // "gpt-4.1", "gemini-2", "sdxl", etc.
+  aspectRatio: text("aspect_ratio"), // "1:1", "16:9"
 
   usageCount: integer("usage_count").default(0).notNull(),
 

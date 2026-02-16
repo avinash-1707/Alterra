@@ -4,7 +4,7 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
-export interface ExtractedContext {
+export interface ExtractedContextInterface {
   name: string;
   structuredData: {
     subject: string;
@@ -26,7 +26,7 @@ export interface ExtractedContext {
 export async function extractImageContext(
   imageBase64: string,
   mimeType: string,
-): Promise<ExtractedContext> {
+): Promise<ExtractedContextInterface> {
   if (!imageBase64 || !mimeType) {
     throw new Error("Image data and MIME type are required");
   }
@@ -112,7 +112,7 @@ Rules:
       throw new Error("Invalid response structure from Gemini");
     }
 
-    return parsed as ExtractedContext;
+    return parsed as ExtractedContextInterface;
   } catch (err) {
     console.error("Gemini raw response:", rawText);
     console.error("Parse error:", err);

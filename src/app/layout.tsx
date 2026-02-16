@@ -4,6 +4,7 @@ import "./globals.css";
 import { View } from "drizzle-orm";
 import { ViewTransitions } from "next-view-transitions";
 import { Toaster } from "@/components/ui/sonner";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -54,8 +55,10 @@ export default function RootLayout({
         className={`${manrope.variable} ${instrumentSerif.variable} ${bebasNeue.variable}`}
       >
         <body className={`${manrope.className} antialiased`}>
-          <Toaster />
-          {children}
+          <ReactQueryProvider>
+            <Toaster />
+            {children}
+          </ReactQueryProvider>
         </body>
       </html>
     </ViewTransitions>
