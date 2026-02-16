@@ -31,8 +31,8 @@ export const plans = pgTable("plans", {
   priceYearly: numeric("price_yearly", { precision: 10, scale: 2 }),
 
   creditsPerMonth: integer("credits_per_month").notNull(),
-  maxImageSizeMb: integer("max_image_size_mb").notNull(),
 
+  maxImageSizeMb: integer("max_image_size_mb").notNull(),
   priorityQueue: boolean("priority_queue").default(false).notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),

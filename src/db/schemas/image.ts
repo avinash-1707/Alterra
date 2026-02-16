@@ -8,6 +8,7 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
+import { relations } from "drizzle-orm";
 
 export const imageStatusEnum = pgEnum("image_status", [
   "PROCESSING",
@@ -36,3 +37,10 @@ export const images = pgTable("images", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const imagesRelations = relations(images, ({ one }) => ({
+  user: one(user, {
+    fields: [images.userId],
+    references: [user.id],
+  }),
+}));
