@@ -1,34 +1,36 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { createAuthClient } from "better-auth/react";
-const { useSession } = createAuthClient();
+import type { DashboardTab } from "./dashboard-tabs";
+import type { DashboardSession } from "./types";
 
 interface DashboardSidebarProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  activeTab: DashboardTab;
+  session: DashboardSession | null;
 }
 
 export default function DashboardSidebar({
   open,
   setOpen,
+  activeTab,
+  session,
 }: DashboardSidebarProps) {
-  const pathname = usePathname();
-  const { data: session } = useSession();
-
-  const navItems = [
+  const navItems: Array<{
+    label: string;
+    tab: DashboardTab;
+    href: string;
+    icon: ReactNode;
+  }> = [
     {
       label: "Dashboard",
-      href: "/dashboard",
+      tab: "overview",
+      href: "/dashboard?tab=overview",
       icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -40,14 +42,10 @@ export default function DashboardSidebar({
     },
     {
       label: "Generate",
-      href: "/dashboard/generate",
+      tab: "generate",
+      href: "/dashboard?tab=generate",
       icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -58,15 +56,11 @@ export default function DashboardSidebar({
       ),
     },
     {
-      label: "Gallery",
-      href: "/dashboard/gallery",
+      label: "Hub",
+      tab: "hub",
+      href: "/dashboard?tab=hub",
       icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -77,15 +71,11 @@ export default function DashboardSidebar({
       ),
     },
     {
-      label: "Context Library",
-      href: "/dashboard/context",
+      label: "Context Manager",
+      tab: "context",
+      href: "/dashboard?tab=context",
       icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -95,77 +85,46 @@ export default function DashboardSidebar({
         </svg>
       ),
     },
-    {
-      label: "Settings",
-      href: "/dashboard/settings",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      ),
-    },
   ];
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col bg-zinc-950/40 backdrop-blur-xl border-r border-zinc-800/50 transition-all duration-300 ${
+        className={`hidden border-r border-zinc-800/50 bg-zinc-950/40 backdrop-blur-xl transition-all duration-300 md:flex md:flex-col ${
           open ? "w-64" : "w-20"
         }`}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
       >
-        <div className="flex flex-col h-full p-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 mt-4 mb-10 px-2">
+        <div className="flex h-full flex-col p-4">
+          <Link href="/" className="mt-4 mb-10 flex items-center gap-3 px-2">
             <Image
               src="/alterra-logo.png"
               alt="Alterra Logo"
               width={32}
               height={20}
-              className="invert rounded-md"
+              className="rounded-md invert"
             />
-            {open && (
-              <span className="text-2xl font-bold bg-linear-to-r font-bebas text-white whitespace-nowrap">
-                Alterra
-              </span>
-            )}
+            {open && <span className="font-bebas text-2xl font-bold text-white">Alterra</span>}
           </Link>
 
-          {/* Navigation */}
           <nav className="flex-1 space-y-2">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = item.tab === activeTab;
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                  className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 ${
                     isActive
                       ? "bg-linear-to-r from-orange-500/20 to-pink-500/20 text-orange-400"
-                      : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                      : "text-zinc-400 hover:bg-zinc-900/50 hover:text-white"
                   }`}
                 >
                   <span className="shrink-0">{item.icon}</span>
                   {open && (
-                    <span className="text-sm font-medium whitespace-nowrap transition-transform duration-200 group-hover:translate-x-0.5">
+                    <span className="whitespace-nowrap text-sm font-medium transition-transform duration-200 group-hover:translate-x-0.5">
                       {item.label}
                     </span>
                   )}
@@ -174,26 +133,25 @@ export default function DashboardSidebar({
             })}
           </nav>
 
-          {/* User Profile */}
-          <div className="mt-auto pt-4 border-t border-zinc-800/50">
+          <div className="mt-auto border-t border-zinc-800/50 pt-4">
             <Link
               href="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900/50 transition-all duration-200"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-zinc-400 transition-all duration-200 hover:bg-zinc-900/50 hover:text-white"
             >
               <Image
                 src={session?.user?.image || "/images/avatar_placeholder.png"}
                 alt="User"
                 width={32}
                 height={32}
-                className="rounded-full bg-zinc-900/50 border border-zinc-800/50"
+                className="rounded-full border border-zinc-800/50 bg-zinc-900/50"
               />
               {open && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-medium text-white truncate">
-                    {session?.user?.name || "John Doe"}
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-sm font-medium text-white">
+                    {session?.user?.name || "Account"}
                   </span>
-                  <span className="text-xs text-zinc-500 truncate">
-                    {session?.user?.email || "john@example.com"}
+                  <span className="truncate text-xs text-zinc-500">
+                    {session?.user?.email || "No email"}
                   </span>
                 </div>
               )}
@@ -202,27 +160,21 @@ export default function DashboardSidebar({
         </div>
       </aside>
 
-      {/* Mobile Sidebar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/50">
+      <div className="fixed top-0 right-0 left-0 z-50 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-xl md:hidden">
         <div className="flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-orange-500 to-pink-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-orange-500 to-pink-500">
+              <span className="text-sm font-bold text-white">A</span>
             </div>
-            <span className="text-xl font-bold bg-linear-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-orange-400 to-pink-400 bg-clip-text text-xl font-bold text-transparent">
               Alterra
             </span>
           </Link>
           <button
             onClick={() => setOpen(!open)}
-            className="p-2 text-zinc-400 hover:text-white transition-colors"
+            className="p-2 text-zinc-400 transition-colors hover:text-white"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

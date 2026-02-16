@@ -1,12 +1,26 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AuthOverlay from "@/components/auth/AuthOverlay";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { resolveDashboardTab } from "@/components/dashboard/dashboard-tabs";
+import { authClient } from "@/lib/server-auth-client";
 
-export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+interface DashboardPageProps {
+  searchParams?:
+    | {
+        tab?: string;
+      }
+    | Promise<{
+        tab?: string;
+      }>;
+}
 
-  return session ? <DashboardLayout /> : <AuthOverlay />;
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const params = await Promise.resolve(searchParams ?? {});
+  const activeTab = resolveDashboardTab(params.tab);
+  const session = await authClient.getSession();
+
+  if (!session) {
+    return <AuthOverlay />;
+  }
+
+  return <DashboardLayout activeTab={activeTab} session={session} />;
 }
