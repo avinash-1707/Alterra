@@ -107,7 +107,7 @@ export default function ContextModal({
 
             <div className="space-y-6">
               {/* Metadata Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {context.model && (
                   <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4">
                     <div className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">
@@ -125,17 +125,6 @@ export default function ContextModal({
                     </div>
                     <div className="text-sm text-white font-medium">
                       {context.aspectRatio}
-                    </div>
-                  </div>
-                )}
-                {context.tags && context.tags.length > 0 && (
-                  <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4">
-                    <div className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">
-                      Tags
-                    </div>
-                    <div className="text-sm text-white font-medium">
-                      {context.tags.length} tag
-                      {context.tags.length !== 1 ? "s" : ""}
                     </div>
                   </div>
                 )}

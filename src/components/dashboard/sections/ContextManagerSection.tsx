@@ -123,7 +123,7 @@ export default function ContextManager() {
 
       // Update selected context if it's the one being updated
       if (selectedContext?.id === id) {
-        const response = await axios.get(`/api/contexts/${id}`);
+        const response = await axios.get(`/api/v1/contexts/${id}`);
         setSelectedContext(response.data.data);
       }
     } catch (error) {
@@ -149,7 +149,7 @@ export default function ContextManager() {
   const handleContextClick = async (context: Context) => {
     try {
       // Fetch full context details
-      const response = await axios.get(`/api/contexts/${context.id}`);
+      const response = await axios.get(`/api/v1/contexts/${context.id}`);
       setSelectedContext(response.data.data);
     } catch (error) {
       console.error("Failed to fetch context details:", error);

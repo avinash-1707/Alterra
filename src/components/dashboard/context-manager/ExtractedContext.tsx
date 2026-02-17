@@ -1,12 +1,157 @@
 "use client";
 
 import { CreateContextDTO } from "@/types/context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface ExtractedContextProps {
   context: CreateContextDTO;
   onSave: (context: CreateContextDTO) => void;
   onDiscard: () => void;
+}
+
+// Represents a single editable field path + value in the JSON tree
+interface JsonField {
+  id: string;
+  path: (string | number)[];
+  label: string;
+  value: unknown;
+  depth: number;
+  isArrayItem: boolean;
+}
+
+// Recursively flatten a JSON object into key-value pairs with paths
+function flattenJson(
+  obj: unknown,
+  path: (string | number)[] = [],
+  depth = 0,
+): JsonField[] {
+  const fields: JsonField[] = [];
+
+  if (obj === null || typeof obj !== "object") {
+    return fields;
+  }
+
+  if (Array.isArray(obj)) {
+    obj.forEach((item, index) => {
+      const itemPath = [...path, index];
+      if (item !== null && typeof item === "object") {
+        // Nested object/array inside array — recurse
+        fields.push(...flattenJson(item, itemPath, depth + 1));
+      } else {
+        fields.push({
+          id: itemPath.join("."),
+          path: itemPath,
+          label: String(index),
+          value: item,
+          depth,
+          isArrayItem: true,
+        });
+      }
+    });
+  } else {
+    Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
+      const fieldPath = [...path, key];
+      if (value !== null && typeof value === "object") {
+        // Nested — recurse, don't add a checkbox for the parent key itself
+        fields.push(...flattenJson(value, fieldPath, depth + 1));
+      } else {
+        fields.push({
+          id: fieldPath.join("."),
+          path: fieldPath,
+          label: key,
+          value,
+          depth,
+          isArrayItem: false,
+        });
+      }
+    });
+  }
+
+  return fields;
+}
+
+// Set a deeply nested value in an object (immutably)
+function setNestedValue(
+  obj: unknown,
+  path: (string | number)[],
+  value: unknown,
+): unknown {
+  if (path.length === 0) return value;
+
+  const [head, ...rest] = path;
+  if (Array.isArray(obj)) {
+    const copy = [...obj];
+    copy[head as number] = setNestedValue(copy[head as number], rest, value);
+    return copy;
+  } else {
+    const copy = { ...(obj as Record<string, unknown>) };
+    copy[head as string] = setNestedValue(copy[head as string], rest, value);
+    return copy;
+  }
+}
+
+// Remove a deeply nested value
+function removeNestedValue(obj: unknown, path: (string | number)[]): unknown {
+  if (path.length === 0) return obj;
+  const [head, ...rest] = path;
+
+  if (Array.isArray(obj)) {
+    if (rest.length === 0) {
+      return (obj as unknown[]).filter((_, i) => i !== (head as number));
+    }
+    const copy = [...obj];
+    copy[head as number] = removeNestedValue(copy[head as number], rest);
+    return copy;
+  } else {
+    const copy = { ...(obj as Record<string, unknown>) };
+    if (rest.length === 0) {
+      delete copy[head as string];
+    } else {
+      copy[head as string] = removeNestedValue(copy[head as string], rest);
+    }
+    return copy;
+  }
+}
+
+// Format a value for display in the input
+function formatValue(value: unknown): string {
+  if (value === null) return "null";
+  if (typeof value === "string") return value;
+  return JSON.stringify(value);
+}
+
+// Parse a string back to an appropriate type
+function parseValue(raw: string): unknown {
+  if (raw === "null") return null;
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  const num = Number(raw);
+  if (raw !== "" && !isNaN(num)) return num;
+  return raw;
+}
+
+// Determine syntax color for a value
+function valueColorClass(value: unknown): string {
+  if (value === null) return "text-zinc-500";
+  switch (typeof value) {
+    case "boolean":
+      return "text-blue-400";
+    case "number":
+      return "text-amber-400";
+    case "string":
+      return "text-emerald-400";
+    default:
+      return "text-zinc-300";
+  }
+}
+
+// Nice label formatting: camelCase → "Camel Case", snake_case → "Snake Case"
+function formatLabel(label: string): string {
+  return label
+    .replace(/([A-Z])/g, " $1")
+    .replace(/_/g, " ")
+    .replace(/^\s/, "")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export default function ExtractedContext({
@@ -16,47 +161,66 @@ export default function ExtractedContext({
 }: ExtractedContextProps) {
   const [editableContext, setEditableContext] =
     useState<CreateContextDTO>(context);
-  const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set());
+
+  // All field IDs selected (included) by default
+  const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set());
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+
+  const fields = flattenJson(editableContext);
 
   useEffect(() => {
     setEditableContext(context);
-    setSelectedLines(new Set()); // Reset selections when new context arrives
+    setDeselectedIds(new Set());
+    setEditingId(null);
   }, [context]);
 
-  const jsonString = JSON.stringify(editableContext, null, 2);
-  const lines = jsonString.split("\n");
+  const isSelected = (id: string) => !deselectedIds.has(id);
 
-  const toggleLine = (lineIndex: number) => {
-    const newSelected = new Set(selectedLines);
-    const key = `line-${lineIndex}`;
-
-    if (newSelected.has(key)) {
-      newSelected.delete(key);
-    } else {
-      newSelected.add(key);
-    }
-
-    setSelectedLines(newSelected);
+  const toggleField = (id: string) => {
+    setDeselectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
-  const handleLineEdit = (lineIndex: number, newValue: string) => {
-    const newLines = [...lines];
-    newLines[lineIndex] = newValue;
-
-    try {
-      const newJson = JSON.parse(newLines.join("\n"));
-      setEditableContext(newJson);
-    } catch (error) {
-      // Invalid JSON, don't update
-      console.error("Invalid JSON - edit not applied");
-    }
+  const startEdit = (field: JsonField) => {
+    setEditingId(field.id);
+    setEditingValue(formatValue(field.value));
   };
+
+  const commitEdit = useCallback(
+    (field: JsonField) => {
+      const parsed = parseValue(editingValue);
+      const updated = setNestedValue(editableContext, field.path, parsed);
+      setEditableContext(updated as CreateContextDTO);
+      setEditingId(null);
+    },
+    [editableContext, editingValue],
+  );
 
   const handleSave = async () => {
+    // Build a context that only includes selected fields
+    let finalContext = editableContext;
+    // Remove deselected fields (in reverse order to avoid path shifting)
+    const deselectedFields = fields.filter((f) => deselectedIds.has(f.id));
+    // Sort deepest paths last so parents aren't removed before children
+    const sorted = [...deselectedFields].sort(
+      (a, b) => b.path.length - a.path.length,
+    );
+    for (const field of sorted) {
+      finalContext = removeNestedValue(
+        finalContext,
+        field.path,
+      ) as CreateContextDTO;
+    }
+
     setIsSaving(true);
     try {
-      await onSave(editableContext);
+      await onSave(finalContext);
     } catch (error) {
       console.error("Failed to save context:", error);
     } finally {
@@ -64,16 +228,19 @@ export default function ExtractedContext({
     }
   };
 
+  const selectedCount = fields.length - deselectedIds.size;
+
   return (
     <div className="mt-8 pt-8 border-t border-zinc-800/50">
+      {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <h3 className="text-xl font-bold text-white">Extracted Context</h3>
         </div>
         <p className="text-sm text-zinc-400">
-          Review and edit the extracted context. Click checkboxes to enable
-          editing specific lines.
+          All fields are selected by default. Uncheck any you want to exclude
+          before saving. Click a value to edit it inline.
         </p>
       </div>
 
@@ -101,64 +268,98 @@ export default function ExtractedContext({
           </div>
         </div>
 
-        {/* JSON Editor */}
+        {/* Field Editor */}
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl overflow-hidden">
-          <div className="bg-zinc-950/50 px-4 py-2 border-b border-zinc-800/50 flex items-center justify-between">
-            <span className="text-xs font-mono text-zinc-400">JSON Editor</span>
-            {selectedLines.size > 0 && (
-              <span className="text-xs text-orange-400">
-                {selectedLines.size} line{selectedLines.size !== 1 ? "s" : ""}{" "}
-                selected
+          {/* Toolbar */}
+          <div className="bg-zinc-950/50 px-4 py-2.5 border-b border-zinc-800/50 flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400">
+              Context Fields
+            </span>
+            <div className="flex items-center gap-3">
+              {deselectedIds.size > 0 && (
+                <span className="text-xs text-orange-400">
+                  {deselectedIds.size} field
+                  {deselectedIds.size !== 1 ? "s" : ""} excluded
+                </span>
+              )}
+              <span className="text-xs text-zinc-500">
+                {selectedCount}/{fields.length} selected
               </span>
-            )}
-          </div>
-          <div className="p-4 max-h-96 overflow-y-auto">
-            <div className="font-mono text-sm">
-              {lines.map((line, index) => {
-                const lineKey = `line-${index}`;
-                const isSelected = selectedLines.has(lineKey);
-
-                return (
-                  <div
-                    key={index}
-                    className="flex items-start gap-2 hover:bg-zinc-800/30 group rounded px-1 -mx-1"
-                  >
-                    {/* Checkbox */}
-                    <label className="flex items-center pt-1 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleLine(index)}
-                        className="w-3 h-3 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 cursor-pointer"
-                      />
-                    </label>
-
-                    {/* Line Content */}
-                    <div className="flex-1 min-w-0">
-                      {isSelected ? (
-                        <input
-                          type="text"
-                          value={line}
-                          onChange={(e) =>
-                            handleLineEdit(index, e.target.value)
-                          }
-                          className="w-full bg-zinc-800 text-orange-300 px-2 py-0.5 rounded border border-orange-500/30 focus:outline-none focus:border-orange-500 font-mono text-sm"
-                        />
-                      ) : (
-                        <pre className="text-zinc-300 whitespace-pre overflow-x-auto">
-                          {line}
-                        </pre>
-                      )}
-                    </div>
-
-                    {/* Line Number */}
-                    <span className="text-zinc-600 text-xs pt-1 opacity-0 group-hover:opacity-100 transition-opacity tabular-nums">
-                      {index + 1}
-                    </span>
-                  </div>
-                );
-              })}
             </div>
+          </div>
+
+          {/* Field rows */}
+          <div className="divide-y divide-zinc-800/40">
+            {fields.map((field) => {
+              const selected = isSelected(field.id);
+              const isEditing = editingId === field.id;
+
+              return (
+                <div
+                  key={field.id}
+                  className={`flex items-center gap-3 px-4 py-2.5 transition-colors duration-150 group
+                    ${selected ? "hover:bg-zinc-800/30" : "opacity-40 bg-zinc-950/20"}`}
+                  style={{ paddingLeft: `${1 + field.depth * 1.25}rem` }}
+                >
+                  {/* Checkbox */}
+                  <label className="flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => toggleField(field.id)}
+                      className="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-0 cursor-pointer accent-orange-500"
+                    />
+                  </label>
+
+                  {/* Key label */}
+                  <span className="text-xs font-mono text-zinc-400 shrink-0 min-w-30">
+                    {field.isArrayItem ? (
+                      <span className="text-zinc-600">[{field.label}]</span>
+                    ) : (
+                      <span title={field.label}>
+                        {formatLabel(field.label)}
+                      </span>
+                    )}
+                  </span>
+
+                  {/* Value — click to edit */}
+                  <div className="flex-1 min-w-0">
+                    {isEditing ? (
+                      <input
+                        autoFocus
+                        type="text"
+                        value={editingValue}
+                        onChange={(e) => setEditingValue(e.target.value)}
+                        onBlur={() => commitEdit(field)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit(field);
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                        className="w-full bg-zinc-800 text-orange-300 px-2 py-0.5 rounded border border-orange-500/40 focus:outline-none focus:border-orange-500 font-mono text-sm"
+                      />
+                    ) : (
+                      <button
+                        disabled={!selected}
+                        onClick={() => selected && startEdit(field)}
+                        title="Click to edit"
+                        className={`text-left font-mono text-sm truncate max-w-full rounded px-1.5 py-0.5 transition-colors duration-100
+                          ${selected ? "hover:bg-zinc-800/60 cursor-text" : "cursor-default"}
+                          ${valueColorClass(field.value)}`}
+                      >
+                        {typeof field.value === "string"
+                          ? `"${field.value}"`
+                          : formatValue(field.value)}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Type badge */}
+                  <span className="text-[10px] text-zinc-600 font-mono shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {field.value === null ? "null" : typeof field.value}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -208,7 +409,7 @@ export default function ExtractedContext({
                 Saving...
               </span>
             ) : (
-              "Save Context"
+              `Save Context${deselectedIds.size > 0 ? ` (${selectedCount} fields)` : ""}`
             )}
           </button>
           <button

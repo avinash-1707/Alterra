@@ -96,7 +96,7 @@ async function verifyContextOwnership(contextId: string, userId: string) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<SuccessResponse | ErrorResponse>> {
   try {
     const session = await authClient.getSession();
@@ -114,7 +114,7 @@ export async function GET(
       );
     }
 
-    const contextId = params.id;
+    const { id: contextId } = await params;
     const userId = session.user.id;
 
     const context = await verifyContextOwnership(contextId, userId);
@@ -177,7 +177,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<SuccessResponse | ErrorResponse>> {
   try {
     const session = await authClient.getSession();
@@ -195,7 +195,7 @@ export async function PATCH(
       );
     }
 
-    const contextId = params.id;
+    const { id: contextId } = await params;
     const userId = session.user.id;
 
     // Verify ownership
@@ -314,7 +314,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<DeleteSuccessResponse | ErrorResponse>> {
   try {
     const session = await authClient.getSession();
@@ -332,7 +332,7 @@ export async function DELETE(
       );
     }
 
-    const contextId = params.id;
+    const { id: contextId } = await params;
     const userId = session.user.id;
 
     // Verify ownership
