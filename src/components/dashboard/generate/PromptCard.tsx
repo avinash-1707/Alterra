@@ -145,7 +145,7 @@ export default function PromptCard({
                       e.stopPropagation();
                       setSelectedContext(null);
                     }}
-                    className="ml-0.5 text-zinc-500 hover:text-white transition-colors"
+                    className="ml-0.5 text-lg text-zinc-500 hover:text-white transition-colors"
                   >
                     ×
                   </span>
