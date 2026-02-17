@@ -21,7 +21,7 @@ const TAB_CONTENT: Record<DashboardTab, ReactNode> = {
 
 const TAB_HEADING: Record<DashboardTab, string> = {
   overview: "Dashboard",
-  generate: "Generate",
+  generate: "",
   hub: "Hub",
   context: "Context Manager",
 };
@@ -36,14 +36,9 @@ export default function DashboardContent({
 
       <div className="space-y-6 p-6 md:p-10">
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold text-zinc-100 md:text-4xl">
+          <h1 className="text-3xl font-bold text-zinc-100 md:text-4xl mb-8">
             {TAB_HEADING[activeTab]}
           </h1>
-          <p className="text-sm text-zinc-400">
-            {session?.user?.name
-              ? `Welcome back, ${session.user.name}.`
-              : "Welcome to your dashboard."}
-          </p>
         </header>
 
         <section>{TAB_CONTENT[activeTab]}</section>
