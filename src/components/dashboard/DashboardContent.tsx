@@ -4,8 +4,8 @@ import type { DashboardTab } from "./dashboard-tabs";
 import type { DashboardSession } from "./types";
 import OverviewSection from "./sections/OverviewSection";
 import GenerateSection from "./sections/GenerateSection";
-import HubSection from "./sections/HubSection";
 import ContextManagerSection from "./sections/ContextManagerSection";
+import GallerySection from "./sections/GallerySection";
 
 interface DashboardContentProps {
   activeTab: DashboardTab;
@@ -15,14 +15,14 @@ interface DashboardContentProps {
 const TAB_CONTENT: Record<DashboardTab, ReactNode> = {
   overview: <OverviewSection />,
   generate: <GenerateSection />,
-  hub: <HubSection />,
+  hub: <GallerySection />,
   context: <ContextManagerSection />,
 };
 
 const TAB_HEADING: Record<DashboardTab, string> = {
   overview: "Dashboard",
   generate: "",
-  hub: "Hub",
+  hub: "",
   context: "Context Manager",
 };
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useContexts } from "@/hooks/useContexts";
+import { Context } from "@/types/context";
 import GenerateHero from "../generate/GenerateHero";
 import PromptCard from "../generate/PromptCard";
 import CreditEstimate from "../generate/CreditEstimate";
@@ -16,45 +18,13 @@ export interface AttachedImage {
   previewUrl: string;
 }
 
-export interface SavedContext {
-  id: string;
-  name: string;
-  description: string;
-  keywords: string[];
-}
-
-const MOCK_CONTEXTS: SavedContext[] = [
-  {
-    id: "1",
-    name: "Cyberpunk Character",
-    description:
-      "Neon-lit futuristic character with chrome implants, purple hair",
-    keywords: ["cyberpunk", "neon", "futuristic"],
-  },
-  {
-    id: "2",
-    name: "Mountain Landscape",
-    description:
-      "Misty mountain peaks at sunrise, dramatic golden hour lighting",
-    keywords: ["landscape", "mountains", "sunrise"],
-  },
-  {
-    id: "3",
-    name: "Abstract Geometry",
-    description: "Clean geometric shapes with gradient colors, minimalist",
-    keywords: ["abstract", "geometric", "minimal"],
-  },
-];
-
 export default function GenerateSection() {
   const [prompt, setPrompt] = useState("");
   const [smartExpansion, setSmartExpansion] = useState(false);
   const [attachedImage, setAttachedImage] = useState<AttachedImage | null>(
     null,
   );
-  const [selectedContext, setSelectedContext] = useState<SavedContext | null>(
-    null,
-  );
+  const [selectedContext, setSelectedContext] = useState<Context | null>(null);
   const [generationState, setGenerationState] =
     useState<GenerationState>("idle");
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
@@ -62,18 +32,38 @@ export default function GenerateSection() {
   );
   const [showContextModal, setShowContextModal] = useState(false);
   const [showRetryModal, setShowRetryModal] = useState(false);
+  const { data: contextsData } = useContexts({
+    page: 1,
+    limit: 100,
+    sortOrder: "desc",
+  });
+  const availableContexts = contextsData?.data ?? [];
 
   const handleGenerate = async () => {
     if (!prompt.trim() && !attachedImage) return;
+
     setGenerationState("generating");
 
-    // Fake API call
-    await new Promise((r) => setTimeout(r, 3000));
+    const formData = new FormData();
+    formData.append("prompt", prompt);
+    formData.append("smartExpansion", String(smartExpansion));
 
-    // Use a placeholder gradient image as the "generated" result
-    setGeneratedImageUrl(
-      "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1024&q=80",
-    );
+    if (attachedImage) {
+      formData.append("image", attachedImage.file);
+    }
+
+    if (selectedContext) {
+      formData.append("contextId", selectedContext.id);
+    }
+
+    const res = await fetch("/api/v1/images/generate", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    setGeneratedImageUrl(data.imageUrl);
     setGenerationState("done");
   };
 
@@ -99,14 +89,9 @@ export default function GenerateSection() {
     setPrompt(text);
   };
 
-  const handleContextSelect = (context: SavedContext) => {
+  const handleContextSelect = (context: Context) => {
     setSelectedContext(context);
     setShowContextModal(false);
-  };
-
-  const resetToIdle = () => {
-    setGenerationState("idle");
-    setGeneratedImageUrl(null);
   };
 
   return (
@@ -153,7 +138,7 @@ export default function GenerateSection() {
       {/* Context Picker Modal */}
       {showContextModal && (
         <ContextPickerModal
-          contexts={MOCK_CONTEXTS}
+          contexts={availableContexts}
           selected={selectedContext}
           onSelect={handleContextSelect}
           onClose={() => setShowContextModal(false)}

@@ -1,23 +1,15 @@
-// app/api/v1/images/route.ts — GET (authorized, session user's own images)
+// app/api/v1/images/explore/route.ts — GET (public, all images with creator info)
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { images } from "@/db/schemas/image";
 import { and, eq, lt, desc, ilike, SQL } from "drizzle-orm";
-import { authClient } from "@/lib/server-auth-client";
+import { user } from "@/db/schemas/auth-schema";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
 
 export async function GET(req: NextRequest) {
-  // ── Auth ─────────────────────────────────────────────────────────────────
-  const session = await authClient.getSession();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const userId = session.user.id;
-
   // ── Query params ──────────────────────────────────────────────────────────
   const { searchParams } = req.nextUrl;
 
@@ -34,10 +26,7 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search")?.trim() ?? null;
 
   // ── Build filters ─────────────────────────────────────────────────────────
-  const filters: SQL[] = [
-    eq(images.userId, userId),
-    eq(images.status, "COMPLETED"),
-  ];
+  const filters: SQL[] = [eq(images.status, "COMPLETED")];
 
   if (cursor) {
     filters.push(lt(images.createdAt, new Date(cursor)));
@@ -58,8 +47,14 @@ export async function GET(req: NextRequest) {
       processingTimeMs: images.processingTimeMs,
       metadata: images.metadata,
       createdAt: images.createdAt,
+      creator: {
+        id: user.id,
+        name: user.name,
+        image: user.image,
+      },
     })
     .from(images)
+    .innerJoin(user, eq(images.userId, user.id))
     .where(and(...filters))
     .orderBy(desc(images.createdAt))
     .limit(limit + 1);

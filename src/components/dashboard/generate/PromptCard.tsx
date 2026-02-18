@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, useCallback } from "react";
+import { Context } from "@/types/context";
 import {
   AttachedImage,
   GenerationState,
-  SavedContext,
 } from "../sections/GenerateSection";
 import ImageThumbnail from "./ImageThumbnail";
 import SmartToggle from "./SmartToggle";
@@ -16,8 +16,8 @@ interface PromptCardProps {
   setSmartExpansion: (v: boolean) => void;
   attachedImage: AttachedImage | null;
   setAttachedImage: (v: AttachedImage | null) => void;
-  selectedContext: SavedContext | null;
-  setSelectedContext: (v: SavedContext | null) => void;
+  selectedContext: Context | null;
+  setSelectedContext: (v: Context | null) => void;
   generationState: GenerationState;
   onGenerate: () => void;
   onOpenContextModal: () => void;

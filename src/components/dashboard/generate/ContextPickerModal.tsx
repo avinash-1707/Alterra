@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { SavedContext } from "../sections/GenerateSection";
+import { Context } from "@/types/context";
 
 interface ContextPickerModalProps {
-  contexts: SavedContext[];
-  selected: SavedContext | null;
-  onSelect: (ctx: SavedContext) => void;
+  contexts: Context[];
+  selected: Context | null;
+  onSelect: (ctx: Context) => void;
   onClose: () => void;
 }
 
@@ -71,6 +71,11 @@ export default function ContextPickerModal({
 
         {/* Context list */}
         <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
+          {contexts.length === 0 && (
+            <div className="rounded-xl border border-zinc-800/50 bg-zinc-900/30 p-4 text-sm text-zinc-500">
+              No saved contexts available yet.
+            </div>
+          )}
           {contexts.map((ctx) => {
             const isSelected = selected?.id === ctx.id;
             return (
@@ -102,10 +107,10 @@ export default function ContextPickerModal({
                       {ctx.name}
                     </p>
                     <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2 leading-relaxed">
-                      {ctx.description}
+                      {ctx.aiPromptBlock}
                     </p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
-                      {ctx.keywords.slice(0, 3).map((kw) => (
+                      {(ctx.tags ?? []).slice(0, 3).map((kw) => (
                         <span
                           key={kw}
                           className="px-2 py-0.5 bg-zinc-800 rounded-md text-xs text-zinc-400"
