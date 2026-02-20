@@ -15,14 +15,14 @@ interface DashboardContentProps {
 const TAB_CONTENT: Record<DashboardTab, ReactNode> = {
   overview: <OverviewSection />,
   generate: <GenerateSection />,
-  hub: <GallerySection />,
+  gallery: <GallerySection />,
   context: <ContextManagerSection />,
 };
 
 const TAB_HEADING: Record<DashboardTab, string> = {
   overview: "Dashboard",
   generate: "",
-  hub: "",
+  gallery: "",
   context: "Context Manager",
 };
 

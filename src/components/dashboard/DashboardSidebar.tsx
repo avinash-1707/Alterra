@@ -70,9 +70,9 @@ export default function DashboardSidebar({
       ),
     },
     {
-      label: "Hub",
-      tab: "hub",
-      href: "/dashboard?tab=hub",
+      label: "Gallery",
+      tab: "gallery",
+      href: "/dashboard?tab=gallery",
       icon: (
         <svg
           className="h-5 w-5"
