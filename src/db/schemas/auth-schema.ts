@@ -10,25 +10,41 @@ import {
 } from "drizzle-orm/pg-core";
 import { contexts } from "./context";
 import { images } from "./image";
+import { subscriptions } from "./billing";
 
-export const user = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  role: text("role").notNull().default("user"),
+export const user = pgTable(
+  "user",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    role: text("role").notNull().default("user"),
 
-  // CREDIT SYSTEM
-  creditBalance: integer("credit_balance").notNull().default(50),
-  creditResetAt: timestamp("credit_reset_at").notNull().defaultNow(),
+    // CREDIT SYSTEM
+    creditBalance: integer("credit_balance").notNull().default(50),
+    creditResetAt: timestamp("credit_reset_at").notNull().defaultNow(),
 
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
-});
+    // Cached subscription state. Source of truth remains subscriptions table.
+    subscriptionStatus: text("subscription_status").notNull().default("canceled"),
+    subscriptionEndsAt: timestamp("subscription_ends_at"),
+
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("user_subscription_status_idx").on(table.subscriptionStatus),
+    index("user_subscription_ends_at_idx").on(table.subscriptionEndsAt),
+    index("user_subscription_status_ends_at_idx").on(
+      table.subscriptionStatus,
+      table.subscriptionEndsAt,
+    ),
+  ],
+);
 
 export const session = pgTable(
   "session",
@@ -97,6 +113,7 @@ export const userRelations = relations(user, ({ many }) => ({
   accounts: many(account),
   contexts: many(contexts),
   images: many(images),
+  subscriptions: many(subscriptions),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
