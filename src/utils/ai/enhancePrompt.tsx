@@ -31,7 +31,7 @@ Rules:
 - Preserve the original intent of the user's request`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash-lite",
+    model: "gemini-3-flash-preview",
     contents: `Enhance this image generation prompt: "${rawPrompt.trim()}"`,
     config: {
       systemInstruction,
@@ -41,6 +41,8 @@ Rules:
   });
 
   const enhanced = response.text?.trim();
+
+  console.log(enhanced);
 
   if (!enhanced) {
     throw new Error(
